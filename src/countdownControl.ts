@@ -86,7 +86,7 @@ export const countdownControl = (handleTimeChange: (time: Time) => void) => {
 		if (timer === null) {
 			return 'stopped'
 		}
-		return 'started'
+		return 'running'
 	}
 
 	const callback = () => {
