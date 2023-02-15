@@ -11,17 +11,54 @@
 				max-width: 37rem;
 				margin-inline: auto;
 			}
+			time {
+				display: block;
+				margin-bottom: 1rem;
+				font-size: 2.5rem;
+			}
+			form {
+				display: contents;
+			}
 		</style>
 	</head>
 	<body>
 		<h1>Countdown control</h1>
+		<time id="time">00:00:00:00</time>
+		<form id="set">
+			<label
+				>Seconds to set: <input type="number" min="0" name="seconds" value="60"
+			/></label>
+			<button type="submit">Start</button>
+		</form>
+		<button id="stop" type="button">Stop</button>
 		<script type="module">
 			import('./dist/index.es.js')
 				.catch((error) =>
 					import('https://unpkg.com/countdown-control@latest?module'),
 				)
-				.then((library) => {
-					console.log('loaded', library)
+				.then(({ countdownControl }) => {
+					const time = document.querySelector('#time')
+					const stop = document.querySelector('#stop')
+					const set = document.querySelector('#set')
+
+					const handleTimeChange = ({ seconds, minutes, hours, days }) => {
+						const p = (number) => number.toString().padStart(2, '0')
+						time.textContent = `
+							${p(days)}:${p(hours)}:${p(minutes)}:${p(seconds)}
+						`
+					}
+
+					const countdown = countdownControl(handleTimeChange)
+
+					set.addEventListener('submit', (event) => {
+						event.preventDefault()
+						const seconds = Number(new FormData(set).get('seconds'))
+						countdown.start(seconds)
+					})
+
+					stop.addEventListener('click', () => {
+						countdown.stop()
+					})
 				})
 		</script>
 	</body>
