@@ -50,8 +50,10 @@ export const countdownControl = (handleTimeChange: (time: Time) => void) => {
 	const getTime = (): Time => {
 		const nowMilliseconds = now()
 		const elapsedMilliseconds = nowMilliseconds - countdownStartedAtMilliseconds
-		const secondsTotal =
-			startedAtSecondsTotal - Math.floor(elapsedMilliseconds / 1000)
+		const secondsTotal = Math.max(
+			0,
+			startedAtSecondsTotal - Math.floor(elapsedMilliseconds / 1000),
+		)
 
 		if (secondsTotal === 0) {
 			stop()
@@ -77,6 +79,7 @@ export const countdownControl = (handleTimeChange: (time: Time) => void) => {
 			return
 		}
 		clearTimeout(timer)
+		timer = null
 	}
 
 	const getState = () => {
