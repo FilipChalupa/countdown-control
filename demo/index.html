@@ -11,10 +11,21 @@
 				max-width: 37rem;
 				margin-inline: auto;
 			}
+			@keyframes flash {
+				0% {
+					opacity: 0;
+				}
+				30% {
+					opacity: 1;
+				}
+			}
 			time {
 				display: block;
 				margin-bottom: 1rem;
 				font-size: 2.5rem;
+			}
+			time span {
+				animation: flash 1s step-end;
 			}
 			form {
 				display: contents;
@@ -26,10 +37,12 @@
 		<time id="time">00:00:00:00</time>
 		<form id="set">
 			<label
-				>Seconds to set: <input type="number" min="0" name="seconds" value="60"
+				>Seconds to set:
+				<input id="input" type="number" min="0" name="seconds" value="60"
 			/></label>
 			<button type="submit">Start</button>
 		</form>
+		<button id="pause" type="button">Pause</button>
 		<button id="stop" type="button">Stop</button>
 		<script type="module">
 			import('./dist/index.es.js')
@@ -38,26 +51,37 @@
 				)
 				.then(({ countdownControl }) => {
 					const time = document.querySelector('#time')
+					const pause = document.querySelector('#pause')
 					const stop = document.querySelector('#stop')
+					const input = document.querySelector('#input')
 					const set = document.querySelector('#set')
 
 					const handleTimeChange = ({ seconds, minutes, hours, days }) => {
-						const p = (number) => number.toString().padStart(2, '0')
-						time.textContent = `
-							${p(days)}:${p(hours)}:${p(minutes)}:${p(seconds)}
-						`
+						const p = (number) => (number ?? 0).toString().padStart(2, '0')
+						time.innerHTML = `${p(days)}<span>:</span>${p(
+							hours,
+						)}<span>:</span>${p(minutes)}<span>:</span>${p(seconds)}`
 					}
 
 					const countdown = countdownControl(handleTimeChange)
 
 					set.addEventListener('submit', (event) => {
 						event.preventDefault()
-						const seconds = Number(new FormData(set).get('seconds'))
+						const seconds = Number(input.value)
 						countdown.start(seconds)
+					})
+
+					pause.addEventListener('click', () => {
+						if (countdown.getState() === 'stopped') {
+							return
+						}
+						input.value = countdown.getTime().secondsTotal
+						countdown.stop()
 					})
 
 					stop.addEventListener('click', () => {
 						countdown.stop()
+						handleTimeChange({})
 					})
 				})
 		</script>
