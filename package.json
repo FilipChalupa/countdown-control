@@ -10,7 +10,7 @@
 		"dev": "concurrently npm:start npm:demo",
 		"build": "rollup --configPlugin typescript -c",
 		"prepare": "npm run build",
-		"demo": "serve"
+		"demo": "serve demo"
 	},
 	"repository": {
 		"type": "git",
