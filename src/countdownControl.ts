@@ -1,12 +1,9 @@
-export type Time = {
-	seconds: number
-	minutes: number
-	hours: number
-	days: number
-	secondsTotal: number
-}
+import { secondsToTime } from './secondsToTime'
+import { TimeWithTotal } from './Time'
 
-export const countdownControl = (handleTimeChange: (time: Time) => void) => {
+export const countdownControl = (
+	handleTimeChange: (time: TimeWithTotal) => void,
+) => {
 	let timer: ReturnType<typeof setTimeout> | null = null
 	let startedAtSecondsTotal = 0
 	let countdownStartedAtMilliseconds = 0
@@ -47,7 +44,7 @@ export const countdownControl = (handleTimeChange: (time: Time) => void) => {
 		callback()
 	}
 
-	const getTime = (): Time => {
+	const getTime = (): TimeWithTotal => {
 		const nowMilliseconds = now()
 		const elapsedMilliseconds = nowMilliseconds - countdownStartedAtMilliseconds
 		const secondsTotal = Math.max(
@@ -58,18 +55,8 @@ export const countdownControl = (handleTimeChange: (time: Time) => void) => {
 		if (secondsTotal === 0) {
 			stop()
 		}
-
-		const days = Math.floor(secondsTotal / 86400)
-		const hours = Math.floor((secondsTotal - days * 86400) / 3600)
-		const minutes = Math.floor(
-			(secondsTotal - days * 86400 - hours * 3600) / 60,
-		)
-		const seconds = secondsTotal % 60
 		return {
-			seconds,
-			minutes,
-			hours,
-			days,
+			...secondsToTime(secondsTotal),
 			secondsTotal,
 		}
 	}
