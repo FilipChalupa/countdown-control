@@ -1,5 +1,6 @@
 import { secondsToTime } from './secondsToTime'
-import { TimeWithTotal } from './Time'
+import { Time, TimeWithTotal } from './Time'
+import { timeToSeconds } from './timeToSeconds'
 
 export const countdownControl = (
 	handleTimeChange: (time: TimeWithTotal) => void,
@@ -10,26 +11,11 @@ export const countdownControl = (
 
 	const now = () => Date.now()
 
-	const start = (
-		time:
-			| {
-					seconds?: number
-					minutes?: number
-					hours?: number
-					days?: number
-			  }
-			| number,
-	) => {
+	const start = (time: Partial<Time> | number) => {
 		if (timer !== null) {
 			stop()
 		}
-		const seconds =
-			typeof time === 'number'
-				? time
-				: (time.seconds ?? 0) +
-				  (time.minutes ?? 0) * 60 +
-				  (time.hours ?? 0) * 3600 +
-				  (time.days ?? 0) * 86400
+		const seconds = typeof time === 'number' ? time : timeToSeconds(time)
 
 		startedAtSecondsTotal = seconds
 		countdownStartedAtMilliseconds = now()
